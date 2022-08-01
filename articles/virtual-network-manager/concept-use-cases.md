@@ -14,12 +14,6 @@ ms.service: virtual-network-manager
 
 Learn about use cases for Azure Virtual Network Manager including managing connectivity of virtual networks, and securing network traffic.
 
-> [!IMPORTANT]
-> Azure Virtual Network Manager is currently in public preview.
-> This preview version is provided without a service level agreement, and it's not recommended for production workloads. Certain features might not be supported or might have constrained capabilities.
-> For more information, see [Supplemental Terms of Use for Microsoft Azure Previews](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).
-
-
 ## Creating topology and connectivity
 Connectivity configuration allows you to create different network topologies based on your network needs. You create a connectivity configuration by adding new or existing virtual networks into [network groups](concept-network-groups.md) and creating a topology that meets your needs. The connectivity configuration offers three topology options: mesh, hub and spoke, or hub and spoke with direct connectivity between spoke virtual networks.
 
