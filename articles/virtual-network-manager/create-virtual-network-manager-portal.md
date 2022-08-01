@@ -11,6 +11,9 @@ ms.custom: template-quickstart, ignite-fall-2021, mode-ui
 
 # Quickstart: Create a mesh network topology with Azure Virtual Network Manager using the Azure portal
 
+> [!IMPORTANT]
+> Get Someone from the portal team to update this
+
 Get started with Azure Virtual Network Manager by using the Azure portal to manage connectivity for all your virtual networks.
 
 In this quickstart, you'll deploy three virtual networks and use Azure Virtual Network Manager to create a mesh network topology. Then you'll verify if the connectivity configuration got applied.
