@@ -14,46 +14,6 @@ ms.custom: references_regions, ignite-fall-2021
 
 ## General
 
-### What regions are available in public preview?
-
-* North Central US
-
-* South Central US
-
-* West US
-
-* West US 2
-
-* East US
-
-* East US 2
-
-* Canada Central
-
-* North Europe
-
-* West Europe
-
-* UK South
-
-* Switzerland North
-
-* Southeast Asia
-
-* Japan East
-
-* Japan West
-
-* Australia East
-
-* Central India
-
-* All regions have [Availability Zones](../availability-zones/az-overview.md#azure-regions-with-availability-zones), except France Central.
-
-> [!NOTE]
-> Even if an Azure Virtual Network Manager instance isn't available because all zones are down, configurations applied to resources will still persist.
->
-
 ### What are common use cases for using Azure Virtual Network Manager?
 
 * As an IT security manager you can create different network groups to meet the requirements of your environment and its functions. For example, you can create network groups for Production and Test network environments, Dev teams, Finance department, etc. to manage their connectivity and security rules at scale. 
@@ -104,38 +64,31 @@ You can view Azure Virtual Network Manager settings under **Network Manager** fo
 
 ### Can a virtual network managed by Azure Virtual Network Manager be peered to a non-managed virtual network?
 
-Yes, you can choose to override or delete an existing peering already created.
+Yes, you can choose to override and delete an existing peering already created, or allow them to coexist with those created by Azure Virtual Network Manager.
 
-### How can I explicitly allow SQLMI traffic before having deny rules?
-
-Azure SQL Managed Instance has some network requirements. If your security admin rules can block the network requirements, you can use the below sample rules to allow SQLMI traffic with higher priority than the deny rules that can block the traffic of SQL Managed Instance.
-
-#### Inbound rules
-
-| Port | Protocol | Source | Destination | Action |
-| ---- | -------- | ------ | ----------- | ------ |
-| 9000, 9003, 1438, 1440, 1452 | TCP | SqlManagement | **VirtualNetwork** | Allow |
-| 9000, 9003 | TCP | CorpnetSaw | **VirtualNetwork** | Allow |
-| 9000, 9003 | TCP | CorpnetPublic | **VirtualNetwork** | Allow |
-| Any | Any | **VirtualNetwork** | **VirtualNetwork** | Allow |
-| Any | Any | **AzureLoadBalancer** | **VirtualNetwork** | Allow |
-
-#### Outbound rules
-
-| Port | Protocol | Source | Destination | Action |
-| ---- | -------- | ------ | ----------- | ------ |
-| 443, 12000 | TCP	| **VirtualNetwork** | AzureCloud | Allow |
-| Any | Any | **VirtualNetwork** | **VirtualNetwork** | Allow |
-
-
-## Can an Azure Virtual WAN hub be part of a network group? 
+### Can an Azure Virtual WAN hub be part of a network group? 
 
 No, an Azure Virtual WAN hub can't be in a network group at this time.
 
 
-## Can an Azure Virtual WAN be used as the hub in AVNM's hub and spoke topology configuration? 
+### Can an Azure Virtual WAN be used as the hub in AVNM's hub and spoke topology configuration? 
 
 No, an Azure Virtual WAN hub isn't supported as the hub in a hub and spoke topology at this time.
+
+### My Virtual Network is not getting the configurations I am expecting.
+
+#### Have you deployed your configuration to the vnets region?
+Configurations in Azure Virtual Network Manager do not take effect until they are deployed. Make a deployment to the virtual networks region with the appropiate configurations.
+
+#### Is your network group setup properly?
+Check that both your virtual network is part of the network group, and that your configuration is properly applied to that same network group. Also, adding resources via Azure Policy can take some time to take effect. Check here for verifing [network group membership](concept-network-groups.md#network-group-membership).
+
+#### Is your virtual network in scope?
+A network manager is only delegated enough access to apply configurations to virtual networks within your scope. Even if a resource is in your network group, it if is out of scope, it will not recieve any configurations
+
+#### Are you applying security rules to a SQL MI Vnet
+
+Azure SQL Managed Instance has some network requirements. These are enforced through high priority Network Intent Policies, whos purpose conflicts with Security Admin Rules. By default, the application of Admin rules will be skipped on vnets containing any of these Intent Policies. Since allow rules pose no risk of conflict, you can opt to apply Allow Only rules by setting the If you only wish to use Allow rules, you can set AllowOnlyRules on securityConfiguration.properties.applyOnNetworkIntentPolicyBasedServices.
 
 
 ## Limits
