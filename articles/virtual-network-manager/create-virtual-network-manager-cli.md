@@ -12,6 +12,9 @@ ms.devlang: azurecli
 
 # Quickstart: Create a mesh network topology with Azure Virtual Network Manager via the Azure CLI
 
+> [!IMPORTANT]
+> Update this after getting signoff on the powershell.
+
 Get started with Azure Virtual Network Manager by using the Azure CLI to manage connectivity for all your virtual networks.
 
 In this quickstart, you'll deploy three virtual networks and use Azure Virtual Network Manager to create a mesh network topology. Then you'll verify if the connectivity configuration got applied.
