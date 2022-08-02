@@ -9,51 +9,19 @@ ms.date: 11/02/2021
 ms.custom: template-concept, ignite-fall-2021
 ---
 
-# Excluding elements from dynamic membership in Azure Virtual Network Manager (Preview)
+# Using Azure Policy with Network Groups (Preview)
 
-In this article, you'll learn how to use conditional statements to exclude virtual networks from dynamic membership. You create these conditional statements using the basic editor by selecting parameters and operators from a drop-down menu. You'll also learn how to use the advanced editor to update conditional statements of an existing network group.
+In this article, you'll learn how to use Azure Policy to power your Network Groups dynamciall at high scale using extensive conditional expressions. You create these conditional statements using the basic editor by selecting parameters and operators from a drop-down menu. You'll also learn how to use the advanced editor to update conditional statements of an existing network group.
 
-> [!IMPORTANT]
-> Azure Virtual Network Manager is currently in public preview.
-> This preview version is provided without a service level agreement, and it's not recommended for production workloads. Certain features might not be supported or might have constrained capabilities.
-> For more information, see [Supplemental Terms of Use for Microsoft Azure Previews](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).
+## What is Azure Policy
+Azure Policy is a service to enable you to enforce per-resource governance at scale. It can be used to specify conditional expressions which define group membership, as opposed to explicit lists of virtual networks. This condition will continue to power your network groups dynamically, allowing virtual networks to join and leave the group automatically as their fullfilment of the condition changes, with no Network Manager operation required.
+
+Read more about the full capabilities of [Azure Policy](https://docs.microsoft.com/en-us/azure/governance/policy/overview)
 
 ## <a name="parameters"></a> Parameters and operators
 
 Virtual networks with dynamic memberships are selected using conditional statements. You can define more than one conditional statement by using *logical operators* such as **AND** and **OR** for scenarios where you need to further narrow the selected virtual networks. 
 
-List of supported parameters:
-
-| Parameters | Advanced editor field |
-| ---------- | ------------------------- |
-| Name | `Name` |
-| ID | `Id` |
-| Tags| `tag['tagName']` |
-| Subscription Name | `[subscription().Name]` |
-| Subscription ID | `[subscription().Id]` |
-| Subscription Tags | `[subscription().tags['tagName']]` |
-| Resource Group Name | `[resourceGroup().Name]` |
-| Resource Group ID | `[resourceGroup().Id]` |
-| Resource Group Tags | `[resourceGroup().tags['tagName']]` |
-
-List of supported operators:
-
-| Operators | Advanced editor |
-| --------- | --------------- |
-| Contains | `"contains": <>` |
-| Does not contain | `"notcontains": <>` |
-| In | `"in": <>` |
-| Not In | `"notin": <>` |
-| Equals | `"equals": <>` |
-| Does not equal | `"notequals": <>` |
-| Contains any of | `"contains": <>` |
-| Contains all of | `"contains": <>` |
-| Does not contain any of | `"notcontains": <>` |
-| Exists | `"exists": true` |
-| Does not exist | `"exists": false` |
-
-> [!NOTE]
-> The *Exists* and *Does not exist* operators are only used with the **Tags** parameter.
 
 ## Basic editor
 
@@ -85,7 +53,7 @@ To begin using the basic editor to create your conditional statement, you need t
 
 ## Advanced editor
 
-The advanced editor can be used to select virtual network during the creation of a network group or when updating an existing network group. 
+The basic editor provides a subset of functionaliy to give an easy user experience. Expereienced users can use the advanced editor or create their policy resources directly to take advantage of the full feature set Azure Policy has to offer. Visit (Policy documentation)[https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure#policy-rule] to see the full set of functionality.
 
 1. Select the network group created in the previous section. Then select the **Conditional statements** tab.
 
@@ -196,6 +164,11 @@ The `"anyOf"` parameter contains both the conditional statements that are separa
 ```
 
 Both `"allOf"` and `"anyOf"` are used in the code. Since the **AND** operator is last in the list, it is on the outer part of the code containing the two conditional statements with the **OR** operator.
+
+> [!NOTE]
+> Conditionals should filter on resource type Microsoft.Network/virtualNetwork to improve efficiency
+> This condition is prepended for you on any conditionals specified through the portal.
+
 
 ## Next steps
 
