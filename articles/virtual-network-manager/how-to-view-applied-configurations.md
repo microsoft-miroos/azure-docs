@@ -1,5 +1,5 @@
 ---
-title: 'View configurations applied by Azure Virtual Network Manager (Preview)'
+title: 'View configurations applied by Azure Virtual Network Manager'
 description: Learn how to view configurations applied by Azure Virtual Network Manager.
 author: mbender-ms    
 ms.author: mbender
@@ -15,7 +15,9 @@ Azure Virtual Network Manager provides a few different ways for you to verify if
 
 ## Virtual network visibility
 
-Once your configuration has been deployed by Virtual Network Manager, you can view the applied configuration from the virtual network resource. 
+Effective network group membership and applied configurations can be viewed on the per viritual network level.
+
+### Applied Configurations
 
 1. Go to your virtual network resource and select **Network Manager** under *Settings*. On the Connectivity tab, you'll see all the connectivity configurations the virtual network is associated with. 
 
@@ -24,6 +26,34 @@ Once your configuration has been deployed by Virtual Network Manager, you can vi
 2. Select the **Security admin configurations** tab to see all the security rules currently applied to your virtual network.
 
     :::image type="content" source="./media/how-to-view-applied-configurations/vnet-security.png" alt-text="Screenshot of security rules associated to a virtual network.":::
+    
+### Network Group Memberhip.
+
+All network group memberships are recorded and available for query inside Azure Resource Graph.
+
+1. Go to the [Resource Graph Explorer](https://ms.portal.azure.com/#view/HubsExtension/ArgQueryBlade)
+2. Query the 'networkResources' table for the extension resource 'Microsoft.Network/networkGroupMemberships'
+   a. Find all network groups containing your virtual network.
+   ```
+    networkresources
+    | where type == "microsoft.network/networkgroupmemberships"
+    | where id == "{virtualNetworkId}/providers/Microsoft.Network/networkGroupMemberships/default"
+    | mv-expand properties.GroupMemberships
+    | project properties_GroupMemberships.NetworkGroupId
+    ```
+    
+    b. Find all resources inside your network group
+       ```
+    networkresources
+    | where type == "microsoft.network/networkgroupmemberships"
+    | mv-expand properties.GroupMemberships
+    | where properties_GroupMemberships.NetworkGroupId == {networkGroupId}
+    | parse id with virtualNetworkId "/providers/Microsoft.Network/networkGroupMemberships/default"
+    |    project virtualNetworkId
+    ```
+    
+    *Note. Azure Resource Graph will only return networking resources you have read access to at the time of running the query.    
+
 
 ## Virtual machine visibility
 
