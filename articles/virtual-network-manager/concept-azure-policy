@@ -1,0 +1,54 @@
+---
+title: "How can Azure Policy work with Network Groups
+description: Learn about how to utilize Azure policy to configure a high scale and dynamic network group.
+author: miroos-microsoft
+ms.author: miroos
+ms.service: virtual-network-manager
+ms.topic: conceptual
+ms.date: 08/22/2022
+ms.custom: template-concept
+---
+
+# What is a Azure Policy?
+
+In this article, you'll learn what Azure Policy is, and how to use it to define network group membership at high scale which dynamically adapts to changes in your organization.
+
+## Azure Policy
+Azure Policy evaluates resources in Azure by comparing the properties of those resources to business rules. These business rules include a conditional expression, and an effect to apply to resources which match that expression.
+In the case of network groups, you will specify an 'addToNetworkGroup' effect, such that any resource which satisfies your rule will be included in the group.
+
+## Policy Definition
+The definition is a resource which contains your group business logic. It holds your conditional expression, and specifies the destination network group to add any matching resources too.
+Take a look here for more details on the [Definition Structure](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/definition-structure).
+When using a Network Group Policy definition, just set the 'Mode' to 'Microsoft.Network.Data' and the effect 
+```
+  then: {
+    effect: addToNetworkGroup,
+    effectDetails:
+      networkGroupId: {networkGroupId}
+    }
+  }
+  ```
+  
+  ## Policy Assignments
+  Similar to Network Manager configurations, Policy definitions do not immediately take effect when you create them. To begin applying, you must create a Policy Assignment, which assigns a defintion to evaluate at a given scope. At this time, all resource within this scope will be evaluated against the definition. This allows you to have a single reusable definition which you can assign at multiple places for more granular group membership control.
+  Take a look here for more information on the [Assignment Structure](https://docs.microsoft.com/en-us/azure/governance/policy/concepts/assignment-structure)
+  
+
+### Permissions
+Various permission checks are in place when configuring Policy resources for your network group.
+1. policy/write is needed at the scope you are assigning.
+2. networkGRoup/join/action is needed on the network group referenced in the add to network group section, as your action will cause new vnets to be added to the group.
+3. networkGRoup/join/action is also needed on the previously referenced network group in the event of policy deletion or changing the definition affect details, since the removal of this policy will remove things from the group.
+4. If you are using set defitions to assign multiple policies at the same time. Concurrent networkGroup/join/action permission is needed on all definitions being assigned at the time of assignment PUT/Delete.
+
+## Helpful Tips
+
+### Type filtering
+When configuring your Policy Definitions, it is recomended to always include a type condition to scope it to virtual networks. This will allow Policy to filter out non virtual network operations and improve the efficiency of your policy resources.
+
+### Regional Slicing
+Policy Resources are global, which means that any change will take effect on all resources under the assignment scope, regardless of region. If regional slicing and gradual roleout is a concern for you, it is recommended to also include a 'where location in []' condition. You can then incrementally expand the locations list to gradually roll out the effect.
+
+### Assignment scoping
+If you are following management group best practices (find some link about Azure management groups), it is likely you already have your resources organized in a heierarchy structure. Using assignments, you can assign the same defintion to multiple distinct scopes within your hierarchy, alling you to have higher granularity control of which resources are eligble for your network group
