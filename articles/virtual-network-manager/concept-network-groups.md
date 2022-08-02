@@ -13,28 +13,25 @@ ms.custom: template-concept, ignite-fall-2021
 
 In this article, you'll learn about *network groups* and how they can help you group virtual networks together for easier management. You'll also learn about *Static group membership* and *Dynamic group membership* and how to use each type of membership.
 
-> [!IMPORTANT]
-> Azure Virtual Network Manager is currently in public preview.
-> This preview version is provided without a service level agreement, and it's not recommended for production workloads. Certain features might not be supported or might have constrained capabilities.
-> For more information, see [Supplemental Terms of Use for Microsoft Azure Previews](https://azure.microsoft.com/support/legal/preview-supplemental-terms/).
-
 ## Network group
 
-A *network group* is a set of virtual networks selected manually or by using conditional statements. When you select virtual networks manually, it's called *static members*. Virtual networks selected using conditional statements are called *dynamic members*.
+A *network group* is a global container to which networking resources from any region can be added. Configurations can later be applied to target these network group abstractions, which in turn will apply the configuration to all members of the group.
 
-## Static membership
+## Group Membership
 
-When you create a network group, you can add virtual networks to a group by manually selecting individual virtual networks from a provided list. The list of virtual networks is dependent on the scope (management group or subscription) defined at the time of the Azure Virtual Network Manager deployment. This method is useful when you have a few virtual networks you want to add to the network group.
+Group membership is a many-to-many relationship, such that one group holds many virtual networks and any given virtual network can participate in multiple network groups. When a part of a network group, the virtual network will recieve any configurations which were applied to the group and deployed to the virtual networks region.
 
-## Dynamic membership
+### Sources
+A virtual network can be set to join a network group in multiple ways. This membership is an at-least-one condition, so the group will remain in the group so long as there is anything adding it, and leave the group when these sources are gone.
 
-Dynamic membership gives you the flexibility of selecting multiple virtual networks at once if they meet the conditional statements you defined. This method is useful for scenarios where you have hundreds or thousands of virtual networks in one or more subscriptions and need to select a handful either by name, IDs, or tags. Each condition gets processed in the order listed and configurations are applied to virtual networks to meet those conditions. See [Exclude elements from dynamic membership](how-to-exclude-elements.md), to learn how to configure conditional statements.
+#### Static Membership
+Static membership allows you to explicitly add virtual networks to a group by manually selecting individual virtual networks. The list of virtual networks is dependent on the scope (management group or subscription) defined at the time of the Azure Virtual Network Manager deployment. This method is useful when you have a few virtual networks you want to add to the network group. Static membership also allows you to 'patch' the network group contents by individually addinng or removing a virtual network from the group.
 
-## Network group and Azure Policy
+#### Dynamic membership
+Dynamic membership gives you the flexibility of selecting multiple virtual networks at scale if they meet the conditional statements you defined. Powered by Azure policy, this method is useful for scenarios where you have hundreds or thousands of virtual networks, or if membership is dictated by a condition instead of an explicit list. Updating Policy resources will do a full scan of your scope and add any virtual networks matching your condition to the group. This condition is also maintained dynamically, and ongoing changes such as new virtual network creation and tag changes will automatically be assigned the appropriate group membvership. See [Use Azure Policy for dynamicMembership](how-to-use-dynamic-membership) for more details about powering your network groups with Policy.
 
-When you create a network group, an Azure Policy is created so that Azure Virtual Network Manager gets notified about changes made to virtual network membership. The policies defined are available for you to see, but they are not editable by users today. Creating, changing, and deleting Azure Policy definitions and assignments for network groups is only possible through the Azure Network Manager today.
-
-To create an Azure Policy initiative definition and assignment for Azure Virtual Network Manager resources, create and deploy a network group with the necessary configurations. To update an existing Azure Policy initiative definition or corresponding assignment, you'll need to change and deploy changes to the network group within the Azure Virtual Network Manager resource. To delete an Azure Policy initiative definition and assignment, you'll need to undeploy and delete the Azure Virtual Network Manager resources associated with your policy. This may include removing a configuration, deleting a configuration, and deleting a network group. For more information on deletion, review the Azure Virtual Network Manager [checklist for removing components](concept-remove-components-checklist.md).
+### Discoverability
+All group membership is recorded in Azure Resource Graph and available for your use. Each virtual network recieves a single entry in the graph, which specifies both all the groups the virtual network is a member of, as well as what contributing sources are responsible for that membership, either static members or various policy resources.
 
 ## Next steps
 
