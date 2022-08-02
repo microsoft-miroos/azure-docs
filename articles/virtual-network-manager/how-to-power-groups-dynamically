@@ -34,6 +34,9 @@ Assume you have the following virtual networks in your subscription. Each virtua
 * VNetA - *Production*
 * VNetB - *Test*
 
+> [!NOTE] 
+> This whole tutorial needs to be rewritten. Lets wait till after the new portal is stable sometime end of week and then write based on that.
+
 To begin using the basic editor to create your conditional statement, you need to create a new network group.
 
 1. Go to your Azure Virtual Network Manager instance and select **Network Groups** under *Settings*. Then select **+ Add** to create a new network group.
